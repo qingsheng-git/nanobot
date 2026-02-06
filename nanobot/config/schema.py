@@ -78,6 +78,7 @@ class ProvidersConfig(BaseModel):
     vllm: ProviderConfig = Field(default_factory=ProviderConfig)
     gemini: ProviderConfig = Field(default_factory=ProviderConfig)
     moonshot: ProviderConfig = Field(default_factory=ProviderConfig)
+    aixtb: ProviderConfig = Field(default_factory=ProviderConfig)
 
 
 class GatewayConfig(BaseModel):
@@ -141,6 +142,7 @@ class Config(BaseSettings):
             "moonshot": self.providers.moonshot,
             "kimi": self.providers.moonshot,
             "vllm": self.providers.vllm,
+            "aixtb": self.providers.aixtb,
         }
         for keyword, provider in providers.items():
             if keyword in model and provider.api_key:
@@ -159,7 +161,7 @@ class Config(BaseSettings):
             self.providers.anthropic, self.providers.openai,
             self.providers.gemini, self.providers.zhipu,
             self.providers.moonshot, self.providers.vllm,
-            self.providers.groq,
+            self.providers.groq, self.providers.aixtb,
         ]:
             if provider.api_key:
                 return provider.api_key
@@ -172,6 +174,8 @@ class Config(BaseSettings):
             return self.providers.openrouter.api_base or "https://openrouter.ai/api/v1"
         if any(k in model for k in ("zhipu", "glm", "zai")):
             return self.providers.zhipu.api_base
+        if "aixtb" in model:
+            return self.providers.aixtb.api_base
         if "vllm" in model:
             return self.providers.vllm.api_base
         return None
